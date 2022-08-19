@@ -9,19 +9,19 @@
     </div>
     <ul>
         <li class="list active">
-            <x-nav-button title="Home" href="{{route('groups.index')}}" icon="home-outline"/>
+            <x-nav-button title="Dashboard" href="{{route('dashboard')}}" icon="home-outline"/>
+        </li>
+        <li class="list active">
+            <x-nav-button title="Groups" href="{{route('groups.index')}}" icon="home-outline"/>
         </li>
         <li class="list">
-            <x-nav-button title="Profile" href="#" icon="person-outline"/>
+            <x-nav-button title="Notifications" href="{{route('notifications')}}" icon="person-outline"/>
         </li>
         <li class="list">
-            <x-nav-button title="Message" href="#" icon="chatbubbles-outline"/>
+            <x-nav-button title="Lessons" href="#" icon="chatbubbles-outline"/>
         </li>
         <li class="list">
-            <x-nav-button title="Settings" href="#" icon="settings-outline"/>
-        </li>
-        <li class="list">
-            <x-nav-button title="Password" href="#" icon="lock-closed-outline"/>
+            <x-nav-button title="Exams" href="#" icon="settings-outline"/>
         </li>
         <hr>
         <form method="POST" action="{{ route('logout') }}">

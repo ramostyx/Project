@@ -27,7 +27,7 @@ Route::get('/test', function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+})->middleware(['auth','role:teacher'])->name('dashboard');
 
 Route::resource('groups', GroupController::class)->except([
     'create', 'show'
