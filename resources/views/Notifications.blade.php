@@ -22,7 +22,7 @@
                                     <div class="card-body">
                                             @forelse($notifications as $notification)
                                                 <div class="alert alert-success" role="alert">
-                                                    [{{ $notification->created_at }}] User {{ $notification->data['firstName'] }} ({{ $notification->data['email'] }}) has just registered.
+                                                    {{ $notification->data['firstName'] }} {{ $notification->data['message'] }}.
                                                     <a href="#" class="float-right mark-as-read" data-id="{{ $notification->id }}">
                                                         Mark as read
                                                     </a>

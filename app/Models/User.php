@@ -6,7 +6,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
+use phpDocumentor\Reflection\Types\False_;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -54,4 +56,33 @@ class User extends Authenticatable
     {
         return $this->hasOne(Teacher::class);
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public static function isCreator($uID)
+    {
+        return $uID == Auth::user()->id;
+    }
+
+    public static function groupOwner(Group $group)
+    {
+        return $group->teacher->user->id == Auth::user()->id;
+    }
+
+    public static function OwnerOrEnrolled(Group $group)
+    {
+        return $group->teacher->user->id == Auth::user()->id;
+    }
+
+
+    public function fullName()
+    {
+        return $this->firstName." ".$this->lastName;
+    }
+
+
+
 }

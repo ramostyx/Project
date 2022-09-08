@@ -23,7 +23,7 @@ class JoinGroupEventListener
     /**
      * Handle the event.
      *
-     * @param  \App\Events\=JoinGroupEvent  $event
+     * @param  \App\Events\JoinGroupEvent  $event
      * @return void
      */
     public function handle(JoinGroupEvent $event)

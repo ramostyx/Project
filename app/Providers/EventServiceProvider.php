@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Events\JoinGroupEvent;
+use App\Events\PostCommentEvent;
 use App\Listeners\JoinGroupEventListener;
+use App\Listeners\PostCommentEventListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -22,7 +24,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         JoinGroupEvent::class => [
             JoinGroupEventListener::class
-        ]
+        ],
+        PostCommentEvent::class => [
+            PostCommentEventListener::class
+        ],
     ];
 
     /**

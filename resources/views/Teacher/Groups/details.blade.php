@@ -25,10 +25,100 @@
     </x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Students') }}
+            {{ __('Subjects') }}
         </h2>
     </x-slot>
-    <div class="py-12">
+    <div class="flex items-center justify-start mt-6 ">
+        <x-button class="mb-2" onclick="showModal('create-subject')">
+            {{ __('Create a new subject') }}
+        </x-button>
+    </div>
+    <div class="flex flex-wrap justify-start gap-2">
+    @foreach($subjects as $subject)
+            <div>
+                <div class="dropdown relative">
+                    <a
+                        class="
+          dropdown-toggle
+          ml-2 bg-gray-300 px-2 py-2.5 rounded-lg
+        "
+                        href="#"
+                        type="button"
+                        id="dropdownMenuButton2"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        {{$subject->designation}}
+                        <ion-icon name="chevron-down-outline"></ion-icon>
+                    </a>
+                    <ul
+                        class="
+          dropdown-menu
+          min-w-max
+          absolute
+          hidden
+          bg-white
+          text-base
+          z-50
+          float-left
+          py-2
+          list-none
+          text-left
+          rounded-lg
+          shadow-lg
+          mt-1
+          hidden
+          m-0
+          bg-clip-padding
+          border-none" aria-labelledby="dropdownMenuButton2">
+                        <li>
+                            <a
+                                class="
+              dropdown-item
+              text-sm
+              py-2
+              px-4
+              font-normal
+              block
+              w-full
+              whitespace-nowrap
+              bg-transparent
+              text-gray-700
+              hover:bg-gray-100
+            "
+                                href="{{route('groups.subjects.assignments.index',[$group->id,$subject->id])}}"
+                            >Assignments</a>
+                        </li>
+                        <li>
+                            <a
+                                class="
+              dropdown-item
+              text-sm
+              py-2
+              px-4
+              font-normal
+              block
+              w-full
+              whitespace-nowrap
+              bg-transparent
+              text-gray-700
+              hover:bg-gray-100
+            "
+                                href="{{route('groups.subjects.lessons.index',[$group->id,$subject->id])}}"
+                            >Lessons</a
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </div>
+    @endforeach
+    </div>
+
+
+    <h2 class="mt-4 font-semibold text-xl text-gray-800 leading-tight">
+        {{ __('Students') }}
+    </h2>
+    <div class="py-5">
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
@@ -65,7 +155,7 @@
                                                             </tr>
                                                             </thead>
                                                             <tbody>
-                                                            @foreach($group->students as $student)
+                                                            @foreach($students as $student)
                                                                 <tr class="bg-white border-b">
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                                         {{$student->id}}
@@ -81,9 +171,11 @@
                                                                     </td>
 
                                                                     <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                                                        <button type="submit" class="inline-block px-6 py-2.5 bg-transparent text-blue-600 font-medium text-xs leading-tight uppercase rounded hover:bg-gray-100 focus:text-blue-700 focus:bg-gray-100 focus:outline-none focus:ring-0 active:bg-gray-200 active:text-blue-800 transition duration-300 ease-in-out">
-                                                                            <a href="#">Delete</a>
-                                                                        </button>
+                                                                        <div class="flex gap-2">
+                                                                            <button type="submit" class="inline-block px-6 py-2.5 bg-transparent text-blue-600 font-medium text-xs leading-tight uppercase rounded hover:bg-gray-100 focus:text-blue-700 focus:bg-gray-100 focus:outline-none focus:ring-0 active:bg-gray-200 active:text-blue-800 transition duration-300 ease-in-out">
+                                                                                <a href="#">Ban</a>
+                                                                            </button>
+                                                                        </div>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
@@ -93,6 +185,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        {{$students->links()}}
                                     </div>
                                 </div>
                             </div>
@@ -103,18 +196,8 @@
         </div>
     </div>
 
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        {{ __('Subjects') }}
-    </h2>
 
-    <div class="flex items-center justify-start mt-6 ">
-        <x-button class="mb-2" onclick="showModal('create-subject')">
-            {{ __('Create a new subject') }}
-        </x-button>
-    </div>
 
-    @foreach($group->subject as $subject)
-        {{$subject->designation}}
-    @endforeach
+
 
 </x-app-layout>

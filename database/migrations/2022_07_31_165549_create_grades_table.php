@@ -17,6 +17,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('student_id')->constrained()->onDelete('cascade');
             $table->foreignId('subject_id')->constrained()->onDelete('cascade');
+            $table->foreignId('group_id')->constrained()->onDelete('cascade');
+            $table->enum('semester',['1st semester','2nd semester']);
+            $table->enum('evaluation',['1st evaluation','2nd evaluation']);
             $table->unsignedFloat('grade');
             $table->timestamps();
         });

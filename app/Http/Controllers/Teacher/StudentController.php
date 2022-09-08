@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Events\JoinGroupEvent;
 use App\Http\Controllers\Controller;
+use App\Models\Grade;
 use App\Models\Group;
 use App\Models\GroupStudent;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use function Symfony\Component\String\s;
 
 class StudentController extends Controller
 {
@@ -124,11 +126,61 @@ class StudentController extends Controller
         ]);
         $group = Group::where('code',$request->code)->first();
         $student = Auth::user()->student;
-        GroupStudent::create([
+        GroupStudent::firstOrCreate([
            'group_id'=> $group->id,
             'student_id'=> $student->id,
         ]);
         event(new JoinGroupEvent($student->user,$group->teacher));
+        return back();
+    }
+
+    public function Indexgrades(Request $request,Group $group, Student $Student,$semester="1st semester",$evaluation="1st evaluation")
+    {
+        if($request->semester)
+        {
+            $semester = $request->semester;
+            $evaluation = $request->evaluation;
+        }
+
+        return view('Teacher.Groups.Students.Grades.create',
+            compact('group','Student','semester','evaluation'));
+    }
+
+    public function Storegrades(Request $request,Group $group, Student $Student)
+    {
+
+        foreach($group->subject as $subject)
+        {
+            $sub=str_replace(' ','_',$subject->designation);
+            $grade=Grade::findGrade($subject->id,$Student->id,$request->semester,$request->evaluation);
+            if($grade){
+                $grade->update([
+                    'grade'=>$request->$sub,
+                ]);
+            }
+            else{
+                Grade::create([
+                    'grade'=>$request->$sub,
+                    'semester'=>$request->semester,
+                    'evaluation'=>$request->evaluation,
+                    'student_id'=>$Student->id,
+                    'group_id'=>$group->id,
+                    'subject_id'=>$subject->id,
+                ]);
+            }
+
+        }
+
+
+        return redirect()->route('grades',$group->id);
+    }
+
+    public function Deletegrades(Group $group, Student $student,$semester,$evaluation)
+    {
+        foreach ($group->subject as $subject)
+        {
+            Grade::findGrade($subject->id,$student->id,$semester,$evaluation)->delete();
+        }
         return back();
     }
 }

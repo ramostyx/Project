@@ -59,6 +59,7 @@ class JoinGroupNotification extends Notification
             'lastName' => $this->user->lasstName,
             'email' => $this->user->email,
             'id' => $this->user->id,
+            'message' => 'User Joined Group'
         ];
     }
 }

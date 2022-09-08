@@ -33,5 +33,27 @@
         </x-button>
     </div>
 
+    <div class="flex gap-4 mt-4 flex-wrap">
+        @foreach($groups as $group)
+            <div class="flex justify-center">
+                <div class="rounded-lg shadow-lg bg-white max-w-xs">
+                    <img class="rounded-t-lg" src="https://mdbootstrap.com/img/new/standard/nature/185.jpg" alt=""/>
+                    <div class="p-4">
+                        <h5 class="text-gray-900 text-lg font-medium mb-2">{{$group->designation}}</h5>
+                        <div class="mb-3 grid grid-cols-2 gap-6">
+                            <div class="grid grid-rows-2 gap-4 col-span-1">
+                                <x-label value="Year: {{$group->year}}" />
+                                <x-label value="Capacity: {{$group->capacity}}" />
+                            </div>
+                            <div class="grid grid-rows-2 gap-4 col-span-1">
+                                <x-label value="Level: {{$group->level}}" />
+                                <x-label value="Code: {{$group->code}}" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    @endforeach
+
 
 </x-app-layout>

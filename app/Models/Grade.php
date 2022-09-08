@@ -20,4 +20,23 @@ class Grade extends Model
     {
         return $this->belongsTo(Subject::class);
     }
+    public static function findGradeorReplace($suID,$stID,$semester,$evaluation,$replacement=null)
+    {
+        $grade= Grade::findGrade($suID,$stID,$semester,$evaluation);
+        if($grade)
+        {
+            return $grade->grade;
+        }
+        else{
+            return $replacement;
+        }
+    }
+    public static function findGrade($suID,$stID,$semester,$evaluation)
+    {
+        return Grade::where('subject_id',$suID)
+            ->where('student_id',$stID)
+            ->where('semester',$semester)
+            ->where('evaluation',$evaluation)
+            ->first();
+    }
 }

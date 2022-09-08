@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Models\Group;
+use App\Models\Student;
+use App\Models\Subject;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class GroupController extends Controller
@@ -17,8 +21,14 @@ class GroupController extends Controller
      */
     public function index()
     {
-        $groups=Auth::user()->teacher->group;
-        return view('Teacher.Groups.index',compact('groups'));
+        // split action based on role
+        if(Auth::user()->hasRole('teacher'))
+        {
+            $groups=Auth::user()->teacher->groups;
+            return view('Teacher.Groups.index',compact('groups'));
+        }
+        $groups=Auth::user()->student->groups;
+        return view('Student.Groups.index',compact('groups'));
     }
 
     /**
@@ -76,7 +86,11 @@ class GroupController extends Controller
      */
     public function edit(Group $group)
     {
-        return view('Teacher.Groups.edit',compact('group'));
+        if(Auth::user()->hasRole('teacher') and User::isCreator($group->teacher->user->id))
+        {
+            return view('Teacher.Groups.edit',compact('group'));
+        }
+        return back();
     }
 
     /**
@@ -89,7 +103,7 @@ class GroupController extends Controller
     public function update(Request $request, Group $group)
     {
         $request->validate([
-            'capacity' => ['required', 'string', 'max:255'],
+            'capacity' => ['required', 'integer', 'max:255'],
             'designation' => ['required', 'string', 'max:255'],
             'level' => ['required', 'string', 'max:255'],
             'year' => ['required', 'string', 'max:255'],
@@ -117,11 +131,51 @@ class GroupController extends Controller
 
     public function students()
     {
-        $groups=Auth::user()->teacher->group;
+        $groups=Auth::user()->teacher->groups;
         return view('Teacher.Groups.students',compact('groups'));
     }
-    public function details(Group $group)
+    public function details(Group $group,Request $request)
     {
-        return view('Teacher.Groups.details',compact('group'));
+        if(Auth::user()->hasRole('teacher') and User::isCreator($group->teacher->user->id)){
+            $students=$group->students->paginate(5);
+            if($request->search)
+            {
+                $students=Student::search($group->id,$request->search);
+            }
+            $subjects=$group->subject;
+            return view('Teacher.Groups.details',compact('group','students','subjects'));
+        }
+        return back();
     }
+
+    public function grades(Group $group,Request $request,$semester="1st semester",$evaluation="1st evaluation")
+    {
+        if(Auth::user()->hasRole('teacher') and User::isCreator($group->teacher->user->id))
+        {
+            if($request->semester and $request->evaluation)
+            {
+                $semester = $request->semester;
+                $evaluation = $request->evaluation;
+            }
+            $students=$group->students->paginate(5);
+            return view('Teacher.Groups.Students.Grades.index',compact('students','group','semester','evaluation'));
+        }
+        return back();
+    }
+
+    /*public function filter(Group $group,$semester,$evaluation)
+    {
+        $this->grades($group,$semester,$evaluation);
+    }*/
+
+    public function search(Group $group,Request $request,$semester,$evaluation)
+    {
+
+        $students=Student::search($group->id,$request->search);
+
+        return view('Teacher.Groups.Students.Grades.index',compact('students','group','semester','evaluation'));
+
+
+    }
+
 }

@@ -18,8 +18,7 @@ class StudentFactory extends Factory
     public function definition()
     {
         return [
-            'firstName' => fake()->name(),
-            'lastName' => fake()->name(),
+            'user_id' => fake()->unique()->numberBetween(2,21),
         ];
     }
 }
