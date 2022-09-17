@@ -19,9 +19,13 @@ class Student extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function groups()
+    public function groups($status='accepted')
     {
-        return $this->belongsToMany(Group::class);
+        return $this->belongsToMany(Group::class)->wherePivot('status',$status)->withPivot('status','created_at');
+    }
+    public function assignments()
+    {
+        return $this->belongsToMany(Assignment::class)->withPivot('status','file','created_at');
     }
     public function grade()
     {
@@ -64,11 +68,39 @@ class Student extends Model
 
     }
 
+    public function next($gid)
+    {
+        $group=Group::find($gid);
+        $students=$group->students('accepted')->get();
+        $index=$students->search(function($student) {
+            return $student->id === $this->id;
+        });
+        if($index+1<$students->count())
+        {
+            return $students[$index+1]->id;
+        }
+        return $students->first();
+    }
 
-    public static function search($gID,$search)
+    public function back($gid)
+    {
+        $group=Group::find($gid);
+        $students=$group->students('accepted')->get();
+        $index=$students->search(function($student) {
+            return $student->id === $this->id;
+        });
+        if($index-1>0)
+        {
+            return $students[$index-1]->id;
+        }
+        return $students->last();
+    }
+
+
+    public static function search($gID,$search,$status='accepted')
     {
         $group=Group::find($gID);
-        $students=$group->students->filter(function ($student) use ($search)
+        $students=$group->students($status)->get()->filter(function ($student) use ($search)
         {
             return stristr($student->user->firstName,$search) or stristr($student->user->lastName,$search);
         })->paginate(8);

@@ -6,12 +6,11 @@
         </a>
         <span class="title font-medium">Go Back</span>
     </div>
-
     <hr>
     <ul class="mt-4">
-        @foreach($group->students as $student)
+        @foreach($group->students()->get() as $student)
             <li class="list {{$student->id==$Student->id ? 'active':''}}">
-                <x-list-link name="{{$student->user->lastName}} {{$student->user->firstName}}" href="{{route('grades.create',[$group->id,$student->id])}}"/>
+                <x-list-link name="{{$student->user->lastName}} {{$student->user->firstName}}" href="{{route('grades.create',[$group->id,$student->id,$semester,$evaluation])}}"/>
             </li>
         @endforeach
     </ul>

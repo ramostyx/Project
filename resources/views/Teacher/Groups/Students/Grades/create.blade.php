@@ -3,19 +3,15 @@
         @include('layouts.list')
     </x-slot>
     <x-slot name="header">
-        @if(\App\Models\Student::find($Student->id-1))
-            <a href="{{route('grades.create',[$group->id,$Student->id-1,$semester,$evaluation])}}">
+            <a href="{{route('grades.create',[$group->id,$Student->back($group->id),$semester,$evaluation])}}">
                 <ion-icon class="text-5xl" name="chevron-back-outline"></ion-icon>
             </a>
-        @endif
         <h2 class="font-semibold text-3xl text-gray-800 leading-tight">
             {{$Student->user->firstName}} {{$Student->user->lastName}}
         </h2>
-            @if(\App\Models\Student::find($Student->id+1))
-                <a href="{{route('grades.create',[$group->id,$Student->id+1,$semester,$evaluation])}}">
-                    <ion-icon class="text-5xl" name="chevron-forward-outline"></ion-icon>
-                </a>
-            @endif
+        <a href="{{route('grades.create',[$group->id,$Student->next($group->id),$semester,$evaluation])}}">
+            <ion-icon class="text-5xl" name="chevron-forward-outline"></ion-icon>
+        </a>
     </x-slot>
 
     <form action="{{route('grades.create',[$group->id,$Student->id])}}" method="GET" class="flex flex-grow">
@@ -42,19 +38,19 @@
 
 
     <div class="py-12">
-        <div class="max-w-full mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-fit mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="content">
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="card">
-                                    <div class="card-body">
+                                    <div class="card-body max-w-full">
                                         <form method="POST" action="{{ route('grades.store',[$group->id,$Student->id])}}">
                                             @csrf
                                             <div class="flex flex-wrap gap-4 ">
                                                 @foreach($group->subject as $subject)
-                                                    <div class="w-[49%]">
+                                                    <div class="w-[48%]">
                                                         <x-label for="{{$subject->designation}}" value="{{$subject->designation}}" />
                                                         <input
                                                             name="{{$subject->designation}}"

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use function Symfony\Component\String\s;
 
 class GroupController extends Controller
 {
@@ -27,7 +28,7 @@ class GroupController extends Controller
             $groups=Auth::user()->teacher->groups;
             return view('Teacher.Groups.index',compact('groups'));
         }
-        $groups=Auth::user()->student->groups;
+        $groups=Auth::user()->student->groups()->get();
         return view('Student.Groups.index',compact('groups'));
     }
 
@@ -64,7 +65,7 @@ class GroupController extends Controller
             'code' => Str::random(6)
         ]);
 
-        return redirect()->route('groups.index')->with('message', 'Group Created Successfully');
+        return redirect()->route('groups.index')->with('success', 'Group Created Successfully');
     }
 
     /**
@@ -114,7 +115,7 @@ class GroupController extends Controller
             'level' => $request->level,
             'year' => $request->year,
         ]);
-        return redirect()->route('groups.index')->with('message', 'Group Updated Successfully');
+        return redirect()->route('groups.index')->with('success', 'Group Updated Successfully');
     }
 
     /**
@@ -126,7 +127,7 @@ class GroupController extends Controller
     public function destroy(Group $group)
     {
         $group->delete();
-        return back();
+        return back()->with('success', 'Group Deleted Successfully');
     }
 
     public function students()
@@ -137,7 +138,7 @@ class GroupController extends Controller
     public function details(Group $group,Request $request)
     {
         if(Auth::user()->hasRole('teacher') and User::isCreator($group->teacher->user->id)){
-            $students=$group->students->paginate(5);
+            $students=$group->students()->paginate(5);
             if($request->search)
             {
                 $students=Student::search($group->id,$request->search);
@@ -148,16 +149,53 @@ class GroupController extends Controller
         return back();
     }
 
-    public function grades(Group $group,Request $request,$semester="1st semester",$evaluation="1st evaluation")
+    public function requests(Group $group,Request $request)
+    {
+        if(Auth::user()->hasRole('teacher') and User::isCreator($group->teacher->user->id)){
+            $students=$group->students('pending')->get();
+            if($request->search)
+            {
+                $students=Student::search($group->id,$request->search,'pending');
+            }
+            return view('Teacher.Groups.requests',compact('group','students'));
+        }
+        return back();
+    }
+
+    public function redirect()
+    {
+        $group=Auth::user()->teacher->groups->first();
+        if($group)
+            return redirect()->route('group.requests',$group->id);
+        return back()->with('error','You need to create a group first to see related requests');
+
+    }
+
+    public function uploads(Group $group,Request $request)
+    {
+        if(Auth::user()->hasRole('teacher') and User::isCreator($group->teacher->user->id)){
+            $students=$group->students()->get()->paginate(8);
+            if($request->search)
+            {
+                $students=Student::search($group->id,$request->search);
+            }
+            return view('Teacher.Groups.uploads',compact('group','students'));
+        }
+        return back();
+    }
+
+    public function grades(Group $group,Request $request)
     {
         if(Auth::user()->hasRole('teacher') and User::isCreator($group->teacher->user->id))
         {
+            $semester="1st semester";
+            $evaluation="1st evaluation";
             if($request->semester and $request->evaluation)
             {
                 $semester = $request->semester;
                 $evaluation = $request->evaluation;
             }
-            $students=$group->students->paginate(5);
+            $students=$group->students()->paginate(5);
             return view('Teacher.Groups.Students.Grades.index',compact('students','group','semester','evaluation'));
         }
         return back();

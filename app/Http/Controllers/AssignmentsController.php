@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Events\PostCommentEvent;
 use App\Models\Assignment;
+use App\Models\AssignmentStudent;
 use App\Models\Attachment;
 use App\Models\Comment;
 use App\Models\Group;
 use App\Models\GroupStudent;
+use App\Models\StudentAssignment;
 use App\Models\Subject;
 use App\Models\Teacher;
 use App\Models\User;
@@ -34,7 +36,7 @@ class AssignmentsController extends Controller
                 $assignments=$subject->assignment;
                 return view('Teacher.Groups.Subjects.Assignments.index',compact('group','subject','assignments'));
             }
-            return back()->with('error','This subject does not exist or does not belong to this group first');
+            return back()->with('error','This group does not have subjects or this subject does not belong to this group');
         }
         else if(Auth::user()->hasRole('student') and GroupStudent::where('student_id',Auth::user()->student->id)->where('group_id',$group->id))
         {
@@ -76,13 +78,21 @@ class AssignmentsController extends Controller
         $request->validate([
             'title' => ['required','string'],
             'body' => ['required','string'],
-            'attachment' => ['required']
+            'date' => ['required'],
+            'attachment' => ['required'],
         ]);
         $assignement=Assignment::create([
             'subject_id' => $subject->id,
             'title' => $request->title,
             'body' => $request->body,
+            'dueDate' => $request->date,
         ]);
+        foreach ($group->students()->get() as $student) {
+            AssignmentStudent::create([
+                'student_id' => $student->id,
+                'assignment_id' => $assignement->id,
+            ]);
+        }
         foreach($request->file('attachment') as $file)
         {
             $filename=$file->getClientOriginalName();
@@ -98,7 +108,7 @@ class AssignmentsController extends Controller
             $file->storeAs('assignments/attachments',$filename);
 
         }
-        return redirect()->route('groups.subjects.assignments.index',[$group->id,$subject->id])->with('message','Assignment created Succesfuly');
+        return redirect()->route('groups.subjects.assignments.index',[$group->id,$subject->id])->with('success','Assignment created Succesfuly');
     }
 
     /**
@@ -108,9 +118,12 @@ class AssignmentsController extends Controller
      * @param  \App\Models\Assignment  $assignment
      * @return \Illuminate\Http\Response
      */
-    public function show(Subject $subject, Assignment $assignment)
+    public function show(Group $group,Subject $subject, Assignment $assignment)
     {
-        //
+        $status=AssignmentStudent::where('assignment_id',$assignment->id)
+            ->where('student_id',Auth::user()->student->id)->first()->status;
+
+        return view('Teacher.Groups.Subjects.Assignments.show',compact('group','subject','assignment','status'));
     }
 
     /**
@@ -165,7 +178,7 @@ class AssignmentsController extends Controller
             }
         }
 
-        return redirect()->route('groups.subjects.assignments.index',[$group->id,$subject->id])->with('message','Assignment created Succesfuly');
+        return redirect()->route('groups.subjects.assignments.index',[$group->id,$subject->id])->with('success','Assignment updated Succesfuly');
 
     }
 
@@ -179,7 +192,7 @@ class AssignmentsController extends Controller
     public function destroy(Group $group,Subject $subject, Assignment $assignment)
     {
         $assignment->delete();
-        return back();
+        return back()->with('success','Assignment deleted successfully');
     }
 
     public function postComment(Request $request,Assignment $assignment)
@@ -205,19 +218,26 @@ class AssignmentsController extends Controller
     public function deleteComment(Comment $comment)
     {
         $comment->delete();
-        return back();
+        return back()->with('success','Comment deleted successfully');
     }
 
     public function deleteAttachment(Attachment $attachment)
     {
         Storage::delete('assignments/attachments/'.$attachment->filename);
         $attachment->delete();
-        return back();
+        return back()->with('success','Attachment deleted successfully');
     }
 
     public function download(Attachment $attachment)
     {
         return response()->download($attachment->path);
+    }
+
+    public function workDownload(Request $request)
+    {
+        if($request->path != '_')
+            return response()->download($request->path);
+        return back()->with('error','No work has been turned in to download');
     }
 
     public function redirect($gId=null)
@@ -229,11 +249,13 @@ class AssignmentsController extends Controller
             $role=Auth::user()->roles()->first()->name;
             $group=Auth::user()->$role->groups->first();
             if($group)
+            {
                 $subject = $group->subject->first();
                 if($subject)
                     return redirect()->route('groups.subjects.assignments.index',[$group->id,$subject->id]);
-                return back();
-            return back();
+                return back()->with('error','this group does not have any subjects yet');
+            }
+            return back()->with('error','You need to create a group first');
         }
     }
 
@@ -246,9 +268,9 @@ class AssignmentsController extends Controller
             if($subject){
                 return redirect()->route('groups.subjects.assignments.index', [$group->id,$subject->id]);
             }
-            return back();
+            return back()->with('error','this group does not have any subjects yet');;
         }
-        return back();
+        return back()->with('error','You need to create a group first');;
     }
 
 }

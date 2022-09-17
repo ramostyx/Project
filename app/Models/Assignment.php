@@ -25,4 +25,9 @@ class Assignment extends Model
     {
         return $this->morphMany(Comment::class,'commentable');
     }
+
+    public function students($status='turned in')
+    {
+        return $this->belongsToMany(Student::class)->wherePivot('status',$status)->withPivot('status','file','created_at');
+    }
 }

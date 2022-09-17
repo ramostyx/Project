@@ -7,6 +7,7 @@ use App\Http\Controllers\Teacher\GradeController;
 use App\Http\Controllers\Teacher\GroupController;
 use App\Http\Controllers\Teacher\StudentController;
 use App\Http\Controllers\Teacher\SubjectController;
+use App\Models\Group;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -27,7 +28,8 @@ Route::get('/', function () {
 });
 
 Route::get('/test', function () {
-    return view('Groups.edit');
+    $students=Group::find(1)->students('pending')->get();
+    return view('Teacher.Groups.requests',compact('students'));
 });
 
 Route::middleware(['auth','role:teacher'])->prefix('teacher')->name('teacher.')->group(function(){
@@ -37,8 +39,19 @@ Route::middleware(['auth','role:teacher'])->prefix('teacher')->name('teacher.')-
 Route::middleware('auth')->group(function(){
     //Dashboard
     Route::get('/dashboard', function () {
-        if(Auth::user()->hasRole('teacher'))
-            return view('Teacher.dashboard');
+        $requests=Auth::user()->teacher->requestsExist();
+        if(Auth::user()->hasRole('teacher')) {
+            $assignments = collect();
+            foreach (Auth::user()->teacher->groups as $group) {
+                foreach ($group->subject as $subject) {
+                    foreach ($subject->assignment as $assignment) {
+                        $assignments->push($assignment);
+                    }
+                }
+            }
+            $uploads=Auth::user()->teacher->uploadsExist($assignments);
+            return view('Teacher.dashboard', compact('assignments','requests','uploads'));
+        }
         return view('Student.dashboard');
     })->name('dashboard');
 
@@ -47,13 +60,24 @@ Route::middleware('auth')->group(function(){
         'create', 'show'
     ]);
     Route::get('groups/{group}/details',[GroupController::class,'details'])->name('group.details');
+    Route::get('groups/{group}/requests',[GroupController::class,'requests'])->name('group.requests');
+    Route::get('groups/{group}/uploads',[GroupController::class,'uploads'])->name('group.uploads');
+    Route::get('groups/requests/redirect',[GroupController::class,'redirect'])->name('requests.redirect');
     Route::post('student/group/join',[StudentController::class,'join'])->name('groups.students.join');
+    Route::post('groups/{group}/acceptAll',[StudentController::class,'acceptAll'])->name('group.acceptAll');
+    Route::post('groups/{group}/rejectAll',[StudentController::class,'rejectAll'])->name('group.rejectAll');
+    Route::post('groups/{group}/students/{student}/accept',[StudentController::class,'accepted'])->name('groups.students.accept');
+    Route::post('groups/{group}/students/{student}/reject',[StudentController::class,'rejected'])->name('groups.students.reject');
+    Route::post('groups/{group}/students/{student}/ban',[StudentController::class,'banned'])->name('groups.students.ban');
+    Route::post('assignments/{assignment}/upload',[StudentController::class,'upload'])->name('students.assignments.upload');
+
+
 
     //Subjects
     Route::resource('groups.subjects', SubjectController::class);
 
     //Grades
-    Route::get('groups/{group}/grades/{semester?}/{evaluation?}',[GroupController::class, 'grades'])->name('grades');
+    Route::get('groups/{group}/grades',[GroupController::class, 'grades'])->name('grades');
     Route::get('groups/{group}/students/{student}/grades/{semester?}/{evaluation?}',[StudentController::class, 'Indexgrades'])->name('grades.create');
     Route::post('groups/{group}students/{student}/grades',[StudentController::class, 'Storegrades'])->name('grades.store');
     Route::delete('groups/{group}students/{student}/grades/{semester}/{evaluation}',[StudentController::class, 'Deletegrades'])->name('grades.delete');
@@ -69,6 +93,7 @@ Route::middleware('auth')->group(function(){
     Route::post('assignments/{assignment}/comment',[AssignmentsController::class,'postComment'])->name('assignment.comment.post');
     Route::delete('comments/{comment}',[AssignmentsController::class,'deleteComment'])->name('comment.delete');
     Route::delete('attachments/{attachment}',[AssignmentsController::class,'deleteAttachment'])->name('attachment.delete');
+    Route::post('workDownload',[AssignmentsController::class,'workDownload'])->name('work.download');
 
     //Lessons
     Route::get('groups/subjects/lessons/redirect/{gId?}',[LessonsController::class,'redirect'])->name('groups.subjects.lessons.redirect');

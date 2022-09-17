@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
 use phpDocumentor\Reflection\Types\False_;
+use phpDocumentor\Reflection\Types\This;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -25,6 +26,7 @@ class User extends Authenticatable
         'lastName',
         'email',
         'password',
+        'status'
     ];
 
     /**
@@ -82,6 +84,8 @@ class User extends Authenticatable
     {
         return $this->firstName." ".$this->lastName;
     }
+
+
 
 
 

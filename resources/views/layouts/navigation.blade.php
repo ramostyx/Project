@@ -17,6 +17,15 @@
         <li class="list {{request()->routeIs('notifications') ? 'active':''}}">
             <x-nav-button title="Notifications" href="{{route('notifications')}}" icon="notifications-outline"/>
         </li>
+        @role('teacher')
+            <li class="list {{request()->routeIs('group.requests') ? 'active':''}}">
+                <x-nav-button title="Requests" href="{{route('requests.redirect')}}" icon="clipboard-outline"/>
+            </li>
+
+            <li class="list {{request()->routeIs('group.uploads') ? 'active':''}}">
+                <x-nav-button title="Uploads" href="#" icon="cloud-upload-outline"/>
+            </li>
+        @endrole
         <li class="list {{request()->routeIs('groups.subjects.assignments.index') ? 'active':''}}">
             <x-nav-button title="Assignments" href="{{route('assignments.redirect')}}" icon="document-outline"/>
         </li>

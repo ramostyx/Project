@@ -17,6 +17,7 @@
                                         <div class="flex flex-col">
                                             <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
                                                 <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+                                                    Assignment Creation Form
                                                     <div class="overflow-hidden">
                                                         <x-validation-errors />
                                                         <form action="{{route('groups.subjects.assignments.store',[$group->id,$subject->id])}}" method="POST" enctype="multipart/form-data">
@@ -41,7 +42,17 @@
                                                                     />
                                                                 </div>
 
-                                                                <div class="flex gap-2 w-full justify-start items-center">
+                                                                <div class="flex gap-2 w-fit justify-start items-center">
+                                                                    <x-label for="date" value="DueDate:" />
+                                                                    <input
+                                                                        name="date"
+                                                                        type="datetime-local"
+                                                                        class="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                                                                        id="date"
+                                                                    />
+                                                                </div>
+
+                                                                <div class="flex gap-2 w-fit justify-start items-center">
                                                                     <x-label for="attachment" value="Attachment:" />
                                                                     <input
                                                                         name="attachment[]"
@@ -51,6 +62,8 @@
                                                                         multiple
                                                                     />
                                                                 </div>
+
+
                                                             </div>
 
                                                             <div class="flex items-center justify-end mt-8 ">

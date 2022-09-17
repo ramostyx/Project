@@ -152,13 +152,16 @@
                                                                 <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
                                                                     Email
                                                                 </th>
+                                                                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                                                    Status
+                                                                </th>
                                                             </tr>
                                                             </thead>
                                                             <tbody>
                                                             @foreach($students as $student)
                                                                 <tr class="bg-white border-b">
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                                        {{$student->id}}
+                                                                        {{$loop->iteration}}
                                                                     </td>
                                                                     <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                                                                         {{$student->user->firstName}}
@@ -169,12 +172,19 @@
                                                                     <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                                                                         {{$student->user->email}}
                                                                     </td>
+                                                                    <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap flex gap-1 items-center">
+                                                                        <x-status status="{{$student->user->status}}"/>
+                                                                        {{$student->user->status}}
+                                                                    </td>
 
                                                                     <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                                                                         <div class="flex gap-2">
-                                                                            <button type="submit" class="inline-block px-6 py-2.5 bg-transparent text-blue-600 font-medium text-xs leading-tight uppercase rounded hover:bg-gray-100 focus:text-blue-700 focus:bg-gray-100 focus:outline-none focus:ring-0 active:bg-gray-200 active:text-blue-800 transition duration-300 ease-in-out">
-                                                                                <a href="#">Ban</a>
-                                                                            </button>
+                                                                            <form action="{{route('groups.students.ban',[$group->id,$student->id])}}" method="POST">
+                                                                                @csrf
+                                                                                <button type="submit" class="inline-block px-6 py-2.5 bg-transparent text-blue-600 font-medium text-xs leading-tight uppercase rounded hover:bg-gray-100 focus:text-blue-700 focus:bg-gray-100 focus:outline-none focus:ring-0 active:bg-gray-200 active:text-blue-800 transition duration-300 ease-in-out">
+                                                                                    Ban
+                                                                                </button>
+                                                                            </form>
                                                                         </div>
                                                                     </td>
                                                                 </tr>

@@ -107,7 +107,7 @@
     <x-slot name="header">
 
         <div class="flex gap-2">
-            @foreach(Auth::user()->student->groups as $Group)
+            @foreach(Auth::user()->student->groups()->get() as $Group)
                 <x-nav-link href="{{route('assignments.redirect',[$Group->id])}}" active="{{request()->routeIs('groups.subjects.assignments.index') and $Group->id==$group->id ? true : false}}">
                     {{ $Group->designation }}
                 </x-nav-link>

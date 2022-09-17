@@ -16,9 +16,9 @@ class Group extends Model
         return $this->belongsTo(Teacher::class);
     }
 
-    public function students()
+    public function students($status='accepted')
     {
-        return $this->belongsToMany(Student::class);
+        return $this->belongsToMany(Student::class)->wherePivot('status',$status)->withPivot('status','created_at');
     }
 
     public function subject()

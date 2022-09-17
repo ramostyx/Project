@@ -17,7 +17,8 @@ body{
     margin: 0;
     padding: 1rem 0 0 6.75rem;
     background: var(--primary-color);
-    transition: .5s;
+    overflow-x: hidden;
+    transition: 2s;
 }
 
 .body-pd{
@@ -35,14 +36,14 @@ body{
     box-sizing: initial;
     border-left: 5px solid var(--secondary-color);
     background: var(--secondary-color);
-    transition: width 0.5s;
+    transition: width 0.7s;
     overflow-x: hidden;
 }
 .main{
     width: calc(100% - 8rem);;
     height: 100%;
     position: absolute;
-    transition: transform 0.5s;
+    transition: transform 0.7s ,width 0.7s;
 }
 .main.slide{
     width: calc(100% - 17rem);

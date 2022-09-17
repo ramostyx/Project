@@ -48,6 +48,7 @@ class RegisteredUserController extends Controller
             'lastName' => $request->lastName,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'status' => 'online',
         ]);
         if($request->type=='teacher')
         {

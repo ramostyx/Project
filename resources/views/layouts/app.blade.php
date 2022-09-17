@@ -18,6 +18,37 @@
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/index.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    </head>
+    <body class="font-sans antialiased bodykoi">
+        {{ $modal }}
+
+        @include('layouts.navigation')
+        <div class="main">
+            <!-- Page Heading -->
+            <header class="header">
+                {{ $header }}
+            </header>
+
+            <!-- Page Content -->
+            <main class="min-w-7xl m-auto">
+                {{ $slot }}
+            </main>
+            <x-flash/>
+        </div>
+
+
+
+        <!----Font Icon---->
+        <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+        <!----JS CDN Link---->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!---Custom File---->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="{{ asset('js/js.js') }}" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/tw-elements/dist/js/index.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script src="https://cdn.tailwindcss.com"></script>
         <script>
             tailwind.config = {
@@ -33,33 +64,14 @@
 
         <!-- Scripts -->
         <script src="{{ asset('js/app.js') }}" defer></script>
-    </head>
-    <body class="font-sans antialiased bodykoi">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-        {{ $modal }}
 
-        @include('layouts.navigation')
-        <div class="main">
-            <!-- Page Heading -->
-            <header class="header">
-                {{ $header }}
-            </header>
-
-            <!-- Page Content -->
-            <main class="min-w-7xl m-auto">
-                {{ $slot }}
-            </main>
-        </div>
-
-
-
-        <!----Font Icon---->
-        <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-        <!----JS CDN Link---->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <!---Custom File---->
-        <script src="{{ asset('js/js.js') }}" defer></script>
-        <script src="https://cdn.jsdelivr.net/npm/tw-elements/dist/js/index.min.js"></script>
+        <script>
+            config={
+                enableTime : true,
+                dateFormat : "Y-m-d H:i",
+            }
+            flatpickr("input[type=datetime-local]", config);
+        </script>
     </body>
 </html>
 

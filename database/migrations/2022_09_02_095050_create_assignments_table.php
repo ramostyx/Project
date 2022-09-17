@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('subject_id')->constrained()->onDelete('cascade');
             $table->string('title');
             $table->text('body');
-            $table->date('dueDate');
+            $table->dateTime('dueDate');
             $table->timestamps();
         });
     }

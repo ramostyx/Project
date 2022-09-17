@@ -29,7 +29,7 @@ class LessonsController extends Controller
                 $lessons = $subject->lessons;
                 return view('Teacher.Groups.Subjects.Lessons.index', compact('group', 'subject', 'lessons'));
             }
-            return back()->with('error', 'You Need to create a subject for this group first');
+            return back()->with('error', 'This subject does not belong to this group');
         }
         else if(Auth::user()->hasRole('student') and GroupStudent::where('student_id',Auth::user()->student->id)->where('group_id',$group->id))
         {
@@ -38,7 +38,7 @@ class LessonsController extends Controller
                 $lessons=$subject->lessons;
                 return view('Student.Groups.Subjects.lessons.index',compact('group','subject','lessons'));
             }
-            return back()->with('error','This group does not have any subjects yet');
+            return back()->with('error','This subject does not belong to this group');
         }
         return back();
     }
@@ -88,7 +88,7 @@ class LessonsController extends Controller
             $file->storeAs('lessons/attachments', $filename);
 
         }
-        return redirect()->route('groups.subjects.lessons.index', [$group->id, $subject->id])->with('message', 'Lesson posted Succesfuly');
+        return redirect()->route('groups.subjects.lessons.index', [$group->id, $subject->id])->with('success', 'Lesson posted Succesfuly');
     }
 
     /**
@@ -151,7 +151,7 @@ class LessonsController extends Controller
             }
         }
 
-        return redirect()->route('groups.subjects.lessons.index', [$group->id, $subject->id])->with('message', 'Lesson updated Succesfuly');
+        return redirect()->route('groups.subjects.lessons.index', [$group->id, $subject->id])->with('success', 'Lesson updated Succesfuly');
 
     }
 
@@ -165,7 +165,7 @@ class LessonsController extends Controller
     public function destroy(Group $group, Subject $subject, Lesson $lesson)
     {
         $lesson->delete();
-        return back();
+        return back()->with('success','Lesson deleted successfully');
     }
 
     public function redirect($gId=null)
@@ -177,11 +177,13 @@ class LessonsController extends Controller
             $role=Auth::user()->roles()->first()->name;
             $group=Auth::user()->$role->groups->first();
             if($group)
+            {
                 $subject = $group->subject->first();
                 if($subject)
                     return redirect()->route('groups.subjects.lessons.index',[$group->id,$subject->id]);
-                return back();
-            return back();
+                return back()->with('error','This group does not have any subjects as of yet');
+            }
+            return back()->with('error','You need to create a group first');
         }
     }
 
@@ -194,9 +196,9 @@ class LessonsController extends Controller
             if($subject){
                 return redirect()->route('groups.subjects.lessons.index', [$group->id,$subject->id]);
             }
-            return back();
+            return back()->with('error','This group does not have any subjects as of yet');
         }
-        return back();
+        return back()->with('error','You need to create a group first');;
     }
 }
 

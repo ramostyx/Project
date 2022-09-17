@@ -13,11 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('group_student', function (Blueprint $table) {
-            $table->primary(['group_id','student_id']);
-            $table->foreignId('group_id')->constrained()->onDelete('cascade');
+        Schema::create('assignment_student', function (Blueprint $table) {
+            $table->primary(['assignment_id','student_id']);
+            $table->foreignId('assignment_id')->constrained()->onDelete('cascade');
             $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            $table->enum('status',['banned','accepted','pending'])->default('pending');
+            $table->string('status')->default('Not turned in');
+            $table->string('file')->default('_');
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('group_student');
+        Schema::dropIfExists('assignment_student');
     }
 };
