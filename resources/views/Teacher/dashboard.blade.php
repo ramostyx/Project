@@ -10,7 +10,7 @@
     <div class="py-12 ">
         <div class="max-w-full sm:px-6 lg:px-8 grid grid-cols-3 grid-rows-1 grid-flow-row-dense gap-x-12 items-start">
 
-            <div class="col-span-2">
+            <div class="col-span-2 transition-all">
 
                 <div class="mt-2">
                     <div class="flex justify-between">
@@ -19,32 +19,33 @@
                     </div>
 
                     <div class="mt-2 flex flex-col gap-2">
-                        @forelse($assignments->take(-4) as $assignment)
-                            @if($uploads)
-                                @foreach($assignment->students()->get()->take(2) as $student)
-                                    <div class="bg-white hover:shadow-xl hover:shadow-gray-400/80 hover:translate-y-2 ease-in-out overflow-hidden shadow-sm rounded-md ">
-                                        <div class="p-3 bg-white">
-                                            <div class="content">
-                                                <div class="row">
-                                                    <div class="col-lg-12">
-                                                        <div class="card">
-                                                            <div class="card-body flex justify-between items-center">
-                                                                <div class=" flex flex-col gap-1">
-                                                                <span>
-                                                                    {{$assignment->subject->group->designation}}
-                                                                </span>
-                                                                    <span class="text-sm font-light">
-                                                                        {{$assignment->subject->designation}}
+                        @if($uploads)
+                            @forelse($assignments->take(-4) as $assignment)
+                                    @foreach($assignment->students()->get()->take(2) as $student)
+                                        <div class="bg-white hover:shadow-xl hover:shadow-gray-400/80 hover:translate-y-2 ease-in-out overflow-hidden shadow-sm rounded-md ">
+                                            <div class="p-3 bg-white">
+                                                <div class="content">
+                                                    <div class="row">
+                                                        <div class="col-lg-12">
+                                                            <div class="card">
+                                                                <div class="card-body flex justify-between items-center">
+                                                                    <div class=" flex flex-col gap-1">
+                                                                    <span>
+                                                                        {{$assignment->subject->group->designation}}
                                                                     </span>
-                                                                </div>
-                                                                <span class="flex gap-2 justify-center items-center">
-                                                                    {{$student->user->fullName()}}
-                                                                </span>
-                                                                <span class="flex gap-2 justify-center items-center {{$student->pivot->status=='turned in' ? 'text-green-500':'text-red-500'}}">
-                                                                    {{$student->pivot->status}}
-                                                                </span>
-                                                                <div class="mr-12 flex gap-2 font-light text-sm">
-                                                                    {{$student->pivot->created_at->translatedFormat('H:i') }}
+                                                                        <span class="text-sm font-light">
+                                                                            {{$assignment->subject->designation}}
+                                                                        </span>
+                                                                    </div>
+                                                                    <span class="flex gap-2 justify-center items-center">
+                                                                        {{$student->user->fullName()}}
+                                                                    </span>
+                                                                    <span class="flex gap-2 justify-center items-center {{$student->pivot->status=='turned in' ? 'text-green-500':'text-red-500'}}">
+                                                                        {{$student->pivot->status}}
+                                                                    </span>
+                                                                    <div class="mr-12 flex gap-2 font-light text-sm">
+                                                                        {{$student->pivot->created_at->translatedFormat('H:i') }}
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -52,24 +53,24 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                @endforeach
-                            @else
-                                <div class="p-12 mx-auto">
+                                    @endforeach
+                            @empty
+                                <div class="mx-auto">
                                     <x-bladewind.empty-state
-                                        message="Your students are lazy no turned in assignments have been found."
-                                        image="{{asset('bladewind/images/No- data-amico.svg')}}">
+                                        message="No assignments have been found you have to issue one first to check out the related uploaded work."
+                                        image="{{asset('bladewind/images/No data-amico.svg')}}">
                                     </x-bladewind.empty-state>
                                 </div>
-                            @endif
-                        @empty
-                            <div class="p-12 mx-auto">
+                            @endforelse
+                        @else
+                            <div class="mx-auto">
                                 <x-bladewind.empty-state
-                                    message="No assignments have been found you have to issue one first to check out the related uploaded work."
-                                    image="{{asset('bladewind/images/No- data-amico.svg')}}">
+                                    size="35"
+                                    message="Your students are lazy no turned in assignments have been found."
+                                    image="{{asset('bladewind/images/No data-amico.svg')}}">
                                 </x-bladewind.empty-state>
                             </div>
-                        @endforelse
+                        @endif
                     </div>
 
                 </div>
@@ -130,8 +131,9 @@
                                 </div>
                             @endforeach
                         @else
-                            <div class="p-12 mx-auto">
+                            <div class="mx-auto">
                                 <x-bladewind.empty-state
+                                    size="45"
                                     message="No new joining requests have been issued."
                                     image="{{asset('bladewind/images/Empty-amico.svg')}}">
                                 </x-bladewind.empty-state>
@@ -141,6 +143,7 @@
                     @empty
                         <div class="mx-auto">
                             <x-bladewind.empty-state
+                                size="40"
                                 message="You have to create a group first and share the code with your students to see related joining requests"
                                 image="{{asset('bladewind/images/Empty-amico.svg')}}">
                             </x-bladewind.empty-state>
@@ -188,10 +191,11 @@
                                                 </div>
                                             </div>
                                         @empty
-                                            <div class="self-center">
+                                            <div class="mx-auto">
                                                 <x-bladewind.empty-state
                                                     message="You have not created any groups as of yet."
                                                     image="{{asset('bladewind/images/no-code.svg')}}"
+                                                    size="70"
                                                     button_label="Create a group"
                                                     onclick="location.href='/groups'">
                                                 </x-bladewind.empty-state>

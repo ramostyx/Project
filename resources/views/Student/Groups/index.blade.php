@@ -34,10 +34,17 @@
     </div>
 
     <div class="flex gap-4 mt-4 flex-wrap">
-        @foreach($groups as $group)
+        @forelse($groups as $group)
             <div class="flex justify-center">
-                <div class="rounded-lg shadow-lg bg-white max-w-xs">
-                    <img class="rounded-t-lg" src="https://mdbootstrap.com/img/new/standard/nature/185.jpg" alt=""/>
+                <div class="relative rounded-lg shadow-lg bg-white border-t-gray-600 border-t-4 w-96">
+                    <div class="absolute top-1 right-1">
+                        <form action="{{route('groups.students.leave',$group->id)}}" method="POST">
+                            @csrf
+                            <button class="bg-none" >
+                                <ion-icon name="log-out-outline" class="p-2 text-sm hover:bg-red-100 hover:text-red-400 rounded-lg"></ion-icon>
+                            </button>
+                        </form>
+                    </div>
                     <div class="p-4">
                         <h5 class="text-gray-900 text-lg font-medium mb-2">{{$group->designation}}</h5>
                         <div class="mb-3 grid grid-cols-2 gap-6">
@@ -53,7 +60,15 @@
                     </div>
                 </div>
             </div>
-    @endforeach
+        @empty
+            <div class="mt-4 mx-auto">
+                <x-bladewind.empty-state
+                    message="You have not joined any group yet or your joining request is under evaluation."
+                    image="{{asset('bladewind/images/Empty-amico.svg')}}">
+                </x-bladewind.empty-state>
+            </div>
+        @endforelse
+    </div>
 
 
 </x-app-layout>

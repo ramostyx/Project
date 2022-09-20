@@ -1,12 +1,11 @@
 <?php
 
 use App\Http\Controllers\AssignmentsController;
+use App\Http\Controllers\GroupController;
 use App\Http\Controllers\LessonsController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\Teacher\GradeController;
-use App\Http\Controllers\Teacher\GroupController;
-use App\Http\Controllers\Teacher\StudentController;
-use App\Http\Controllers\Teacher\SubjectController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\SubjectController;
 use App\Models\Group;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -24,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::get('/test', function () {
@@ -39,8 +38,8 @@ Route::middleware(['auth','role:teacher'])->prefix('teacher')->name('teacher.')-
 Route::middleware('auth')->group(function(){
     //Dashboard
     Route::get('/dashboard', function () {
-        $requests=Auth::user()->teacher->requestsExist();
         if(Auth::user()->hasRole('teacher')) {
+            $requests=Auth::user()->teacher->requestsExist();
             $assignments = collect();
             foreach (Auth::user()->teacher->groups as $group) {
                 foreach ($group->subject as $subject) {
@@ -62,8 +61,10 @@ Route::middleware('auth')->group(function(){
     Route::get('groups/{group}/details',[GroupController::class,'details'])->name('group.details');
     Route::get('groups/{group}/requests',[GroupController::class,'requests'])->name('group.requests');
     Route::get('groups/{group}/uploads',[GroupController::class,'uploads'])->name('group.uploads');
-    Route::get('groups/requests/redirect',[GroupController::class,'redirect'])->name('requests.redirect');
+    Route::get('groups/uploads/redirect',[GroupController::class,'redirectUploads'])->name('uploads.redirect');
+    Route::get('groups/requests/redirect',[GroupController::class,'redirectRequests'])->name('requests.redirect');
     Route::post('student/group/join',[StudentController::class,'join'])->name('groups.students.join');
+    Route::post('student/groups/{group}/leave',[StudentController::class,'leave'])->name('groups.students.leave');
     Route::post('groups/{group}/acceptAll',[StudentController::class,'acceptAll'])->name('group.acceptAll');
     Route::post('groups/{group}/rejectAll',[StudentController::class,'rejectAll'])->name('group.rejectAll');
     Route::post('groups/{group}/students/{student}/accept',[StudentController::class,'accepted'])->name('groups.students.accept');
@@ -91,13 +92,16 @@ Route::middleware('auth')->group(function(){
     Route::resource('groups.subjects.assignments',AssignmentsController::class);
     Route::get('groups/subjects/assignments/redirect/{gId?}',[AssignmentsController::class,'redirect'])->name('assignments.redirect');
     Route::post('assignments/{assignment}/comment',[AssignmentsController::class,'postComment'])->name('assignment.comment.post');
-    Route::delete('comments/{comment}',[AssignmentsController::class,'deleteComment'])->name('comment.delete');
+    Route::delete('Assignment/comments/{comment}',[AssignmentsController::class,'deleteComment'])->name('comment.delete');
     Route::delete('attachments/{attachment}',[AssignmentsController::class,'deleteAttachment'])->name('attachment.delete');
     Route::post('workDownload',[AssignmentsController::class,'workDownload'])->name('work.download');
 
     //Lessons
     Route::get('groups/subjects/lessons/redirect/{gId?}',[LessonsController::class,'redirect'])->name('groups.subjects.lessons.redirect');
     Route::resource('groups.subjects.lessons',LessonsController::class);
+    Route::delete('Lesson/comments/{comment}',[LessonsController::class,'deleteComment'])->name('lesson.comment.delete');
+    Route::post('lessons/{lesson}/comment',[LessonsController::class,'postComment'])->name('lesson.comment.post');
+
     //Attachments
     Route::get('attachments/{attachment}',[AssignmentsController::class,'download'])->name('download');
 

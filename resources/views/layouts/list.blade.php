@@ -1,7 +1,7 @@
 
 <div class="navigation ">
     <div class="logo">
-        <a class="toggle" href="{{route('groups.index')}}">
+        <a class="toggle" href="{{route('grades',$group->id)}}">
             <ion-icon name="arrow-back-outline"></ion-icon>
         </a>
         <span class="title font-medium">Go Back</span>

@@ -1,9 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Teacher;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Assignment;
 use App\Models\Group;
 use App\Models\Subject;
 use Illuminate\Http\Request;

@@ -16,6 +16,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use PhpParser\Node\Expr\Assign;
 use function PHPUnit\Framework\at;
 
 class AssignmentsController extends Controller
@@ -120,10 +121,35 @@ class AssignmentsController extends Controller
      */
     public function show(Group $group,Subject $subject, Assignment $assignment)
     {
-        $status=AssignmentStudent::where('assignment_id',$assignment->id)
-            ->where('student_id',Auth::user()->student->id)->first()->status;
 
-        return view('Teacher.Groups.Subjects.Assignments.show',compact('group','subject','assignment','status'));
+        if(Auth::user()->hasRole('teacher') and User::groupOwner($group))
+        {
+            if($group->subject->contains($subject))
+            {
+                if($subject->assignment->contains($assignment)) {
+                    return view('Teacher.Groups.Subjects.Assignments.show', compact('group', 'subject', 'assignment'));
+                }
+                return back()->with('error','This assignment does not exist or does not belong to this subject');
+            }
+            return back()->with('error','This group does not have any subjects or this subject does not belong to this group');
+        }
+        else if(Auth::user()->hasRole('student') and $group->students()->get()->contains(Auth::user()->student))
+        {
+            if($group->subject->contains($subject))
+            {
+                if($subject->assignment->contains($assignment)) {
+
+                    $status=AssignmentStudent::where('assignment_id',$assignment->id)
+                        ->where('student_id',Auth::user()->student->id)->first()->status;
+
+                    return view('Student.Groups.Subjects.Assignments.show',compact('group','subject','assignment','status'));
+                }
+                return back()->with('error','This assignment does not exist');
+            }
+            return back()->with('error','This group does not have any subjects yet');
+        }
+        return back();
+
     }
 
     /**
@@ -210,7 +236,8 @@ class AssignmentsController extends Controller
         ]);
         if(Auth::user()->student)
         {
-            event(new PostCommentEvent(Auth::user(),$teacher->user));
+            $message=Auth::user()->fullName().' has commented on an assignment titled '.$assignment->title;
+            event(new PostCommentEvent($teacher->user,$message));
         }
         return back();
     }
@@ -255,7 +282,10 @@ class AssignmentsController extends Controller
                     return redirect()->route('groups.subjects.assignments.index',[$group->id,$subject->id]);
                 return back()->with('error','this group does not have any subjects yet');
             }
-            return back()->with('error','You need to create a group first');
+            if($role=='teacher')
+                return back()->with('error','You need to create a group first');
+            else
+                return back()->with('error','You need to join or get enrolled in a group first');
         }
     }
 

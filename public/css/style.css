@@ -6,23 +6,23 @@
     --accent-color:#464542;
 }
 
-*{
+
+*, *:before, *:after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
+
 body{
     position: relative;
     margin: 0;
     padding: 1rem 0 0 6.75rem;
     background: var(--primary-color);
     overflow-x: hidden;
-    transition: 2s;
 }
 
 .body-pd{
-    padding: 1rem 0 0 16rem;
 }
 .navigation {
     position: fixed;
@@ -43,7 +43,7 @@ body{
     width: calc(100% - 8rem);;
     height: 100%;
     position: absolute;
-    transition: transform 0.7s ,width 0.7s;
+    transition: transform 0.7s,width 0.7s;
 }
 .main.slide{
     width: calc(100% - 17rem);

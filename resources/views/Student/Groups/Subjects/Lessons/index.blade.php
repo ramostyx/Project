@@ -5,10 +5,13 @@
     <x-error-message/>
     <div class="flex-col flex gap-2 mb-2">
 
-        @foreach($lessons as $lesson)
-            <!-- Jumbotron -->
+        @forelse($lessons as $lesson)
+
             <div class="relative w-[90%] p-6 mx-auto shadow-lg rounded-lg bg-white text-gray-700">
-                <h2 class="font-semibold text-3xl mb-5">{{$lesson->title}}</h2>
+                <a href="{{route('groups.subjects.lessons.show',[$group->id,$subject->id,$lesson->id])}}"
+                   class="font-semibold text-3xl mb-5 hover:border-b-2">
+                    {{$lesson->title}}
+                </a>
                 <hr class="my-6 border-gray-300" />
                 <div class="flex flex-wrap p-6 rounded-lg shadow-lg bg-white justify-start items-center">
                     <h2>Attachments: </h2>
@@ -21,8 +24,12 @@
                     @endforeach
                 </div>
             </div>
-            <!-- Jumbotron -->
-        @endforeach
+        @empty
+            <x-bladewind.empty-state
+                message="It's your lucky day no lessons have been posted so no revision today is needed."
+                image="{{asset('bladewind/images/Studying-bro.svg')}}">
+            </x-bladewind.empty-state>
+        @endforelse
     </div>
 
     <x-slot name="header">

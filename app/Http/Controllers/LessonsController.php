@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PostCommentEvent;
 use App\Models\Attachment;
+use App\Models\Comment;
 use App\Models\Group;
 use App\Models\GroupStudent;
 use App\Models\Lesson;
@@ -98,9 +100,58 @@ class LessonsController extends Controller
      * @param \App\Models\Lesson $lesson
      * @return \Illuminate\Http\Response
      */
-    public function show(Subject $subject, Lesson $lesson)
+    public function show(Group $group, Subject $subject, Lesson $lesson)
     {
-        //
+        if(Auth::user()->hasRole('teacher') and User::groupOwner($group))
+        {
+            if($group->subject->contains($subject))
+            {
+                if($subject->lessons->contains($lesson)) {
+                    return view('Teacher.Groups.Subjects.Lessons.show', compact('group', 'subject', 'lesson'));
+                }
+                return back()->with('error','This lesson does not exist or does not belong to this subject');
+            }
+            return back()->with('error','This group does not have any subjects or this subject does not belong to this group');
+        }
+        else if(Auth::user()->hasRole('student') and $group->students()->get()->contains(Auth::user()->student))
+        {
+            if($group->subject->contains($subject))
+            {
+                if($subject->lessons->contains($lesson)) {
+
+                    return view('Student.Groups.Subjects.Lessons.show',compact('group','subject','lesson'));
+                }
+                return back()->with('error','This lesson does not exist');
+            }
+            return back()->with('error','This group does not have any subjects yet');
+        }
+        return back();
+    }
+
+    public function postComment(Request $request,Lesson $lesson)
+    {
+        $request->validate([
+            'comment' => ['required','string'],
+        ]);
+        $teacher=$lesson->subject->group->teacher;
+
+        Comment::create([
+            'body' => $request->comment,
+            'user_id' => Auth::user()->id,
+            'commentable_id' => $lesson->id,
+            'commentable_type' => 'App\Models\Lesson'
+        ]);
+        if(Auth::user()->student)
+        {
+            event(new PostCommentEvent(Auth::user(),$teacher->user));
+        }
+        return back();
+    }
+
+    public function deleteComment(Comment $comment)
+    {
+        $comment->delete();
+        return back()->with('success','Comment deleted successfully');
     }
 
     /**

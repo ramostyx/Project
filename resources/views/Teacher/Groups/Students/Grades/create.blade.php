@@ -37,20 +37,22 @@
     </form>
 
 
-    <div class="py-12">
-        <div class="max-w-fit mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
+    <div class="pb-12">
+        <div class="max-w-fit sm:px-6 lg:px-8">
+            <div class="bg-none overflow-hidden ">
+                <div class="py-6 bg-none ">
                     <div class="content">
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="card">
                                     <div class="card-body max-w-full">
+                                        <h2 class="font-semibold text-3xl mb-5">Grades</h2>
+                                        <hr class="my-6 border-gray-600/40 rounded-xl" />
                                         <form method="POST" action="{{ route('grades.store',[$group->id,$Student->id])}}">
                                             @csrf
-                                            <div class="flex flex-wrap gap-4 ">
+                                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                                 @foreach($group->subject as $subject)
-                                                    <div class="w-[48%]">
+                                                    <div class="w-96">
                                                         <x-label for="{{$subject->designation}}" value="{{$subject->designation}}" />
                                                         <input
                                                             name="{{$subject->designation}}"
@@ -65,6 +67,7 @@
                                             </div>
                                             <input type="hidden" name="semester" value="{{$semester}}"/>
                                             <input type="hidden" name="evaluation" value="{{$evaluation}}"/>
+                                            <hr class="my-6 border-gray-600/40 rounded-xl" />
                                             <div class="flex items-center justify-end mt-8 ">
                                                 <x-button class="ml-4" >
                                                     {{ __('Save') }}

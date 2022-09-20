@@ -19,10 +19,10 @@ class PostCommentEvent
      *
      * @return void
      */
-    public function __construct($student,$teacher)
+    public function __construct($teacher,$message)
     {
-        $this->student = $student;
         $this->teacher = $teacher;
+        $this->message = $message;
     }
 
     /**

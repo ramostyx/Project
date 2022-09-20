@@ -5,9 +5,9 @@
     <x-error-message/>
     <div class="flex-col flex gap-2 mb-2">
 
-        @foreach($assignments as $assignment)
+        @forelse($assignments as $assignment)
 
-            <div class="relative w-[90%] p-6 mx-auto shadow-lg rounded-lg bg-white text-gray-700">
+            <div class="relative w-[90%] px-6 pt-6 pb-2 mx-auto shadow-lg rounded-lg bg-white text-gray-700">
                 <div class="absolute top-3 right-3">
                     <form action="{{route('groups.subjects.assignments.destroy',[$group->id,$subject->id,$assignment->id])}}" method="POST">
                         @csrf
@@ -25,12 +25,15 @@
                         </button>
                     </form>
                 </div>
-                <h2 class="font-semibold text-3xl mb-5">{{$assignment->title}}</h2>
-                <p class="break-words">
+                <a href="{{route('groups.subjects.assignments.show',[$group->id,$subject->id,$assignment->id])}}"
+                   class="font-semibold text-3xl mb-5 hover:border-b-2">
+                    {{$assignment->title}}
+                </a>
+                <p class="break-words mt-2">
                     {{$assignment->body}}
                 </p>
-                <hr class="my-6 border-gray-300" />
-                <div class="flex justify-end">
+                <hr class="mt-3 border-gray-300" />
+                <div class="flex justify-end mt-2">
                     <button
                         type="button"
                         data-mdb-ripple="true"
@@ -63,7 +66,12 @@
                     </div>
                 </div>
             </div>
-        @endforeach
+        @empty
+            <x-bladewind.empty-state
+                message="Assign your class some homework to do."
+                image="{{asset('bladewind/images/Work in progress-bro.svg')}}">
+            </x-bladewind.empty-state>
+        @endforelse
     </div>
 
     <x-slot name="header">

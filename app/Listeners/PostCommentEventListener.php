@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\PostCommentEvent;
+use App\Notifications\GeneralNotification;
 use App\Notifications\PostCommentNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -28,6 +29,6 @@ class PostCommentEventListener
      */
     public function handle(PostCommentEvent $event)
     {
-        Notification::send($event->teacher, new PostCommentNotification($event->student));
+        Notification::send($event->teacher, new GeneralNotification($event->message));
     }
 }

@@ -34,72 +34,82 @@
                 <div class="overflow-hidden">
                     <x-success-message />
                     @if($students->isNotEmpty())
-                        <table class="min-w-full">
-                            <thead class="bg-white border-b">
-                            <tr>
-                                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                                    #
-                                </th>
-                                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                                    First Name
-                                </th>
-                                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                                    Last Name
-                                </th>
-                                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                                    Assignment
-                                </th>
-                                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                                    Status
-                                </th>
-                                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                                    download
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach($students as $student)
-                                <tr class="bg-white border-b">
-                                @foreach($student->assignments as $assignment)
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            {{($students->currentpage()-1) * $students->perpage() + $loop->parent->index + 1}}
-                                        </td>
-                                    <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                        {{$student->user->firstName}}
-                                    </td>
-                                    <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                        {{$student->user->lastName}}
-                                    </td>
-                                    <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                        {{$assignment->title}}
-                                    </td>
-                                    <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap flex gap-1 items-center">
-                                        {{$assignment->pivot->status}}
-                                    </td>
-
-
-                                    <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                        <div class="flex gap-2">
-                                            <form action="{{route('work.download')}}" method="POST">
-                                                @csrf
-                                                <input name="path" type="hidden" value="{{$assignment->pivot->file}}">
-                                                <button type="submit" {{$assignment->pivot->status=='turned in' ? '':'disabled'}} class="inline-block px-6 py-2.5 bg-transparent text-blue-600 font-medium text-xs leading-tight uppercase rounded hover:bg-gray-100 focus:text-blue-700 focus:bg-gray-100 focus:outline-none focus:ring-0 active:bg-gray-200 active:text-blue-800 transition duration-300 ease-in-out">
-                                                    Download
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
+                        @if($assignmentsExist)
+                            <table class="min-w-full">
+                                <thead class="bg-white border-b">
+                                <tr>
+                                    <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                        #
+                                    </th>
+                                    <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                        First Name
+                                    </th>
+                                    <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                        Last Name
+                                    </th>
+                                    <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                        Assignment
+                                    </th>
+                                    <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                        Status
+                                    </th>
+                                    <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                        download
+                                    </th>
                                 </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($students as $student)
+                                    <tr class="bg-white border-b">
+                                    @foreach($student->assignments as $assignment)
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                {{($students->currentpage()-1) * $students->perpage() + $loop->parent->index + 1}}
+                                            </td>
+                                        <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                            {{$student->user->firstName}}
+                                        </td>
+                                        <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                            {{$student->user->lastName}}
+                                        </td>
+                                        <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                            {{$assignment->title}}
+                                        </td>
+                                        <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap flex gap-1 items-center">
+                                            {{$assignment->pivot->status}}
+                                        </td>
+
+
+                                        <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                            <div class="flex gap-2">
+                                                <form action="{{route('work.download')}}" method="POST">
+                                                    @csrf
+                                                    <input name="path" type="hidden" value="{{$assignment->pivot->file}}">
+                                                    <button type="submit" {{$assignment->pivot->status=='turned in' ? '':'disabled'}} class="inline-block px-6 py-2.5 bg-transparent text-blue-600 font-medium text-xs leading-tight uppercase rounded hover:bg-gray-100 focus:text-blue-700 focus:bg-gray-100 focus:outline-none focus:ring-0 active:bg-gray-200 active:text-blue-800 transition duration-300 ease-in-out">
+                                                        Download
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
                                 @endforeach
-                            @endforeach
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                    </div>
                 </div>
-            </div>
-            @else
-                No students
-            @endif
             {{$students->links()}}
+                @else
+                <x-bladewind.empty-state
+                    message="there are no assignments so naturally no uploads."
+                    image="{{asset('bladewind/images/No data-amico.svg')}}">
+                </x-bladewind.empty-state>
+                @endif
+            @else
+                <x-bladewind.empty-state
+                message="You are teaching an empty classroom share the group's code with your students to fill up the group."
+                image="{{asset('bladewind/images/Classroom-pana.svg')}}">
+                </x-bladewind.empty-state>
+            @endif
         </div>
     </div>
 

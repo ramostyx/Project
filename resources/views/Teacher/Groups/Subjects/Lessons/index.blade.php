@@ -5,8 +5,8 @@
     <x-error-message/>
     <div class="flex-col flex gap-2 mb-2">
 
-        @foreach($lessons as $lesson)
-            <!-- Jumbotron -->
+        @forelse($lessons as $lesson)
+
             <div class="relative w-[90%] p-6 mx-auto shadow-lg rounded-lg bg-white text-gray-700">
                 <div class="absolute top-3 right-3">
                     <form action="{{route('groups.subjects.lessons.destroy',[$group->id,$subject->id,$lesson->id])}}" method="POST">
@@ -25,21 +25,38 @@
                         </button>
                     </form>
                 </div>
-                <h2 class="font-semibold text-3xl mb-5">{{$lesson->title}}</h2>
+                <a href="{{route('groups.subjects.lessons.show',[$group->id,$subject->id,$lesson->id])}}"
+                   class="font-semibold text-3xl mb-5 hover:border-b-2">
+                    {{$lesson->title}}
+                </a>
                 <hr class="my-6 border-gray-300" />
+                @if($lesson->attachments->first())
                     <div class="flex flex-wrap p-6 rounded-lg shadow-lg bg-white justify-start items-center">
                         <h2>Attachments: </h2>
                         @foreach($lesson->attachments as $attachment)
-                            <div class="ml-2 bg-gray-200/80 px-2 py-2.5 rounded-3xl">
+                            <div class="ml-2 bg-gray-200/80 px-2 py-2.5 rounded-3xl flex justify-start items-center">
                                 <a href="{{route('download',$attachment->id)}}">
                                     {{$attachment->filename}}
                                 </a>
+                                <form method="POST" action="{{route('attachment.delete',$attachment->id)}}">
+                                    @method('DELETE')
+                                    @csrf
+                                    <button>
+                                        <ion-icon  name="close-outline" class="hover:bg-gray-400 rounded-xl"></ion-icon>
+                                    </button>
+                                </form>
                             </div>
                         @endforeach
                     </div>
+                @endif
             </div>
-            <!-- Jumbotron -->
-        @endforeach
+        @empty
+            <x-bladewind.empty-state
+                message="Post some lessons for your students to study."
+                image="{{asset('bladewind/images/Learning-bro.svg')}}">
+            </x-bladewind.empty-state>
+
+        @endforelse
     </div>
 
     <x-slot name="header">

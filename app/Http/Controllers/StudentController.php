@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Teacher;
+namespace App\Http\Controllers;
 
 use App\Events\JoinGroupEvent;
 use App\Events\JoinGroupResponseEvent;
-use App\Http\Controllers\Controller;
 use App\Models\Assignment;
 use App\Models\AssignmentStudent;
-use App\Models\Attachment;
 use App\Models\Grade;
 use App\Models\Group;
 use App\Models\GroupStudent;
@@ -16,7 +14,7 @@ use App\Models\StudentAssignment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use function Symfony\Component\String\s;
+use Illuminate\Support\Facades\DB;
 
 class StudentController extends Controller
 {
@@ -131,19 +129,38 @@ class StudentController extends Controller
             'code' => ['required', 'string', 'max:255'],
         ]);
         $group = Group::where('code',$request->code)->first();
-        $student = Auth::user()->student;
-        $relation=GroupStudent::where('group_id',$group->id)->where('student_id',$student->id)->first();
-        if($relation and $relation->status=='banned')
-        {
-            return back()->with('error','You have been banned from this group');
+        if($group){
+            $student = Auth::user()->student;
+            $relation = GroupStudent::where('group_id', $group->id)->where('student_id', $student->id)->first();
+            if ($relation) {
+                if ($relation->status == 'banned') {
+                    return back()->with('error', 'You have been banned from this group');
+                }
+                if ($relation->status == 'accepted') {
+                    return back()->with('error', "You can't join a group you're already a part of.");
+                }
+                if ($relation->status == 'pending') {
+                    return back()->with('error', 'Your request is still under evaluation');
+                }
+            }
+            GroupStudent::create([
+                'group_id' => $group->id,
+                'student_id' => $student->id,
+                'status' => 'pending'
+            ]);
+            $message=$student->user->fullName().'has sent a request to join group '.$group->designation;
+            event(new JoinGroupEvent($group->teacher,$message));
+            return back()->with('success','Your joining request have been sent successfully.');
         }
-        GroupStudent::firstOrCreate([
-           'group_id'=> $group->id,
-            'student_id'=> $student->id,
-            'status'=>'pending'
-        ]);
-        event(new JoinGroupEvent($student->user,$group->teacher));
-        return back();
+        return back()->with('error', 'The code you entered does not correspond to any group.');
+    }
+
+    public function leave(Group $group)
+    {
+
+        $student = Auth::user()->student;
+        DB::table('group_student')->where('group_id',$group->id)->where('student_id',$student->id)->delete();
+        return back()->with('success','You have left the group '.$group->designation.' successfully');
     }
 
     public function accepted(Group $group,Student $student)
@@ -161,7 +178,7 @@ class StudentController extends Controller
                 ]);
             }
         }
-        $response='Your request to join'.$group->designation.'has been accepted.';
+        $response='Your request to join '.$group->designation.' has been accepted.';
         event(new JoinGroupResponseEvent($student->user,$response));
         return back();
     }
@@ -223,13 +240,13 @@ class StudentController extends Controller
         return back();
     }
 
-    public function Storegrades(Request $request,Group $group, Student $Student)
+    public function Storegrades(Request $request,Group $group, Student $student)
     {
 
         foreach($group->subject as $subject)
         {
             $sub=str_replace(' ','_',$subject->designation);
-            $grade=Grade::findGrade($subject->id,$Student->id,$request->semester,$request->evaluation);
+            $grade=Grade::findGrade($subject->id,$student->id,$request->semester,$request->evaluation);
             if($grade){
                 $grade->update([
                     'grade'=>$request->$sub,
@@ -240,7 +257,7 @@ class StudentController extends Controller
                     'grade'=>$request->$sub,
                     'semester'=>$request->semester,
                     'evaluation'=>$request->evaluation,
-                    'student_id'=>$Student->id,
+                    'student_id'=>$student->id,
                     'group_id'=>$group->id,
                     'subject_id'=>$subject->id,
                 ]);
@@ -249,7 +266,9 @@ class StudentController extends Controller
         }
 
 
-        return redirect()->route('grades',$group->id)->with('success','Grades have been stored successfully');
+        return redirect()
+            ->route('grades.create',[$group->id,$student->next($group->id),$request->semester,$request->evaluation])
+            ->with('success','Grades have been stored successfully');
     }
 
     public function Deletegrades(Group $group, Student $student,$semester,$evaluation)

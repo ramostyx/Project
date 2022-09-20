@@ -6,9 +6,11 @@
         <h2 class="font-semibold text-3xl text-gray-800 leading-tight">
             Grades
         </h2>
+        <hr class="my-3 border-gray-600/40 rounded-xl" />
     </x-slot>
-<div class="py-12">
+<div class="py-4">
     <div class="max-w-full mx-auto sm:px-6 lg:px-8">
+        @if($students->isNotEmpty())
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
                 <div class="content">
@@ -55,73 +57,81 @@
                                             <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
                                                 <div class="overflow-hidden">
                                                     <x-success-message />
-                                                    <table class="min-w-full">
-                                                        <thead class="bg-white border-b">
-                                                        <tr>
-                                                            <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                                                                #
-                                                            </th>
-                                                            <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                                                                First Name
-                                                            </th>
-                                                            <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                                                                Last Name
-                                                            </th>
-                                                            @foreach($group->subject as $subject)
+                                                        <table class="min-w-full">
+                                                            <thead class="bg-white border-b">
+                                                            <tr>
                                                                 <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                                                                    {{$subject->designation}}
+                                                                    #
                                                                 </th>
-                                                            @endforeach
-                                                        </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                        @foreach($students as $student)
-                                                            <tr class="bg-white border-b">
-                                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                                    {{$loop->iteration}}
-                                                                </td>
-                                                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                                                    {{$student->user->firstName}}
-                                                                </td>
-                                                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                                                    {{$student->user->lastName}}
-                                                                </td>
+                                                                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                                                    First Name
+                                                                </th>
+                                                                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                                                    Last Name
+                                                                </th>
                                                                 @foreach($group->subject as $subject)
-                                                                    <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                                                        {{App\Models\Grade::findGradeorReplace($subject->id,$student->id,$semester,$evaluation,'_')}}
-                                                                    </td>
+                                                                    <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                                                        {{$subject->designation}}
+                                                                    </th>
                                                                 @endforeach
-                                                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                                                    <div class="flex gap-2">
-                                                                        <button type="submit" class="inline-block px-6 py-2.5 bg-transparent text-blue-600 font-medium text-xs leading-tight uppercase rounded hover:bg-gray-100 focus:text-blue-700 focus:bg-gray-100 focus:outline-none focus:ring-0 active:bg-gray-200 active:text-blue-800 transition duration-300 ease-in-out">
-                                                                            <a href="{{route('grades.create',[$group->id,$student->id,$semester,$evaluation])}}">Edit</a>
-                                                                        </button>
-                                                                        <form action="{{route('grades.delete',[$group->id,$student->id,$semester,$evaluation])}}" method="POST">
-                                                                            @csrf
-                                                                            @method('DELETE')
-                                                                            <button type="submit" class="inline-block px-6 py-2.5 bg-transparent text-blue-600 font-medium text-xs leading-tight uppercase rounded hover:bg-gray-100 focus:text-blue-700 focus:bg-gray-100 focus:outline-none focus:ring-0 active:bg-gray-200 active:text-blue-800 transition duration-300 ease-in-out">
-                                                                                Delete
-                                                                            </button>
-                                                                        </form>
-
-                                                                    </div>
-                                                                </td>
                                                             </tr>
-                                                        @endforeach
-                                                        </tbody>
-                                                    </table>
+                                                            </thead>
+                                                            <tbody>
+                                                            @foreach($students as $student)
+                                                                <tr class="bg-white border-b">
+                                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                                        {{($students->currentpage()-1) * $students->perpage() + $loop->index + 1}}                                                                </td>
+                                                                    <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                                                        {{$student->user->firstName}}
+                                                                    </td>
+                                                                    <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                                                        {{$student->user->lastName}}
+                                                                    </td>
+                                                                    @foreach($group->subject as $subject)
+                                                                        <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                                                            {{App\Models\Grade::findGradeorReplace($subject->id,$student->id,$semester,$evaluation,'_')}}
+                                                                        </td>
+                                                                    @endforeach
+                                                                    <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                                                        <div class="flex gap-2">
+                                                                            <button type="submit" class="inline-block px-6 py-2.5 bg-transparent text-blue-600 font-medium text-xs leading-tight uppercase rounded hover:bg-gray-100 focus:text-blue-700 focus:bg-gray-100 focus:outline-none focus:ring-0 active:bg-gray-200 active:text-blue-800 transition duration-300 ease-in-out">
+                                                                                <a href="{{route('grades.create',[$group->id,$student->id,$semester,$evaluation])}}">Edit</a>
+                                                                            </button>
+                                                                            <form action="{{route('grades.delete',[$group->id,$student->id,$semester,$evaluation])}}" method="POST">
+                                                                                @csrf
+                                                                                @method('DELETE')
+                                                                                <button type="submit" class="inline-block px-6 py-2.5 bg-transparent text-blue-600 font-medium text-xs leading-tight uppercase rounded hover:bg-gray-100 focus:text-blue-700 focus:bg-gray-100 focus:outline-none focus:ring-0 active:bg-gray-200 active:text-blue-800 transition duration-300 ease-in-out">
+                                                                                    Delete
+                                                                                </button>
+                                                                            </form>
+
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                            </tbody>
+                                                        </table>
+
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            {{$students->links()}}
+                            <div class="mt-2">
+                                {{$students->links()}}
+                            </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    @else
+        <x-bladewind.empty-state
+            message="You are teaching an empty classroom share the group's code with your students to fill up the group."
+            image="{{asset('bladewind/images/Classroom-pana.svg')}}">
+        </x-bladewind.empty-state>
+    @endif
     </div>
 
 </div>

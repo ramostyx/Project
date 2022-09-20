@@ -1,6 +1,25 @@
 <x-app-layout>
     <x-slot name="modal">
 
+        <x-bladewind.modal
+            name="upload-work" size="large" title="Upload Your Work"
+            show_action_buttons="false">
+            <form method="POST" action="{{route('students.assignments.upload',$assignment->id)}}" enctype="multipart/form-data">
+                @csrf
+                <x-label for="work" value="Work:" />
+                <input
+                    name="work"
+                    type="file"
+                    class="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                    id="work"
+                />
+                <div class="flex items-center justify-end mt-8 ">
+                    <x-button class="ml-4" >
+                        {{ __('Upload') }}
+                    </x-button>
+                </div>
+            </form>
+        </x-bladewind.modal>
     </x-slot>
 
 
@@ -23,15 +42,17 @@
                                     <span class="font-bold">{{$comment->user->fullName()}}:</span>
                                     {{$comment->body}}
                                 </div>
-                                <div class="flex gap-2 absolute top-1.5 bottom-1.5 right-2">
-                                    <form action="{{route('comment.delete',$comment->id)}}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="bg-none" >
-                                            <ion-icon name="trash-outline" class="p-3 text-lg hover:bg-red-100 hover:text-red-400 rounded-lg"></ion-icon>
-                                        </button>
-                                    </form>
-                                </div>
+                                @if(Auth::user()->id == $comment->user->id)
+                                    <div class="absolute top-1.5 bottom-1.5 right-2">
+                                        <form action="{{route('comment.delete',$comment->id)}}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="bg-none" >
+                                                <ion-icon name="trash-outline" class="p-3 text-lg hover:bg-red-100 hover:text-red-400 rounded-lg"></ion-icon>
+                                            </button>
+                                        </form>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     @endforeach
@@ -62,7 +83,12 @@
 
     <x-slot name="header">
         <div class="flex gap-2">
-
+            <div class="bg-white mb-2 rounded-lg shadow-lg w-fit p-4 ">
+                Status: {{$status}}
+            </div>
+            <button class="bg-none" type="submit" onclick="showModal('upload-work')">
+                <ion-icon name="cloud-upload-outline" class="p-4 text-lg hover:bg-blue-100 text-blue-700 rounded-lg"></ion-icon>
+            </button>
         </div>
 
     </x-slot>

@@ -48,6 +48,7 @@
         <main class="min-w-7xl m-auto">
             {{ $slot }}
         </main>
+        <x-flash/>
     </div>
 
 

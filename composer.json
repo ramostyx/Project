@@ -10,7 +10,7 @@
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
-        "mkocansey/bladewind": "^1.30",
+        "mkocansey/bladewind": "^1.4",
         "spatie/laravel-permission": "^5.5"
     },
     "require-dev": {

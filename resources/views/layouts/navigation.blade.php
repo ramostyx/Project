@@ -5,7 +5,7 @@
             <ion-icon name="menu-outline" class="open"></ion-icon>
             <ion-icon name="close-outline" class="close"></ion-icon>
         </div>
-        <span class="title font-medium">Project</span>
+        <span class="title font-medium">Grade Online</span>
     </div>
     <ul>
         <li class="list {{request()->routeIs('dashboard') ? 'active':''}}">
@@ -23,7 +23,7 @@
             </li>
 
             <li class="list {{request()->routeIs('group.uploads') ? 'active':''}}">
-                <x-nav-button title="Uploads" href="#" icon="cloud-upload-outline"/>
+                <x-nav-button title="Uploads" href="{{route('uploads.redirect')}}" icon="cloud-upload-outline"/>
             </li>
         @endrole
         <li class="list {{request()->routeIs('groups.subjects.assignments.index') ? 'active':''}}">

@@ -1,17 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Teacher;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Group;
 use App\Models\Student;
-use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use function Symfony\Component\String\s;
 
 class GroupController extends Controller
 {
@@ -51,7 +47,7 @@ class GroupController extends Controller
     {
 
         $request->validate([
-            'designation' => ['required', 'string', 'max:255'],
+            'designation' => ['required','unique:groups', 'string', 'max:255'],
             'capacity' => ['required', 'integer', 'max:255'],
             'level' => ['required', 'string', 'max:255'],
             'year' => ['required', 'string', 'max:255'],
@@ -162,7 +158,7 @@ class GroupController extends Controller
         return back();
     }
 
-    public function redirect()
+    public function redirectRequests()
     {
         $group=Auth::user()->teacher->groups->first();
         if($group)
@@ -171,34 +167,45 @@ class GroupController extends Controller
 
     }
 
+    public function redirectUploads()
+    {
+        $group=Auth::user()->teacher->groups->first();
+        if($group)
+            return redirect()->route('group.uploads',$group->id);
+        return back()->with('error','You need to create a group first to see related assignment uploads');
+
+    }
+
     public function uploads(Group $group,Request $request)
     {
         if(Auth::user()->hasRole('teacher') and User::isCreator($group->teacher->user->id)){
             $students=$group->students()->get()->paginate(8);
+            $assignmentsExist=$group->assignmentsExist();
             if($request->search)
             {
                 $students=Student::search($group->id,$request->search);
             }
-            return view('Teacher.Groups.uploads',compact('group','students'));
+            return view('Teacher.Groups.uploads',compact('group','students','assignmentsExist'));
         }
         return back();
     }
 
     public function grades(Group $group,Request $request)
     {
-        if(Auth::user()->hasRole('teacher') and User::isCreator($group->teacher->user->id))
-        {
-            $semester="1st semester";
-            $evaluation="1st evaluation";
-            if($request->semester and $request->evaluation)
-            {
-                $semester = $request->semester;
-                $evaluation = $request->evaluation;
+        if(Auth::user()->hasRole('teacher') and User::isCreator($group->teacher->user->id)) {
+            if ($group->subject->first()) {
+                $semester = "1st semester";
+                $evaluation = "1st evaluation";
+                if ($request->semester and $request->evaluation) {
+                    $semester = $request->semester;
+                    $evaluation = $request->evaluation;
+                }
+                $students = $group->students()->paginate(5);
+                return view('Teacher.Groups.Students.Grades.index', compact('students', 'group', 'semester', 'evaluation'));
             }
-            $students=$group->students()->paginate(5);
-            return view('Teacher.Groups.Students.Grades.index',compact('students','group','semester','evaluation'));
+            return back()->with('error','You need to create at least one subject to start grading.');
         }
-        return back();
+            return back();
     }
 
     /*public function filter(Group $group,$semester,$evaluation)

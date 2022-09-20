@@ -45,7 +45,7 @@
     </div>
         <div class="py-5">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                @foreach($students as $student)
+                @forelse($students as $student)
                     <div class="bg-white max-w-5xl mx-auto overflow-hidden shadow-sm sm:rounded-lg mb-2">
                         <div class="p-6 bg-white border-b border-gray-200">
                             <div class="content">
@@ -87,7 +87,12 @@
                             </div>
                         </div>
                     </div>
-                @endforeach
+                @empty
+                    <x-bladewind.empty-state
+                        message="No pending requests have been found."
+                        image="{{asset('bladewind/images/Toggle-bro.svg')}}">
+                    </x-bladewind.empty-state>
+                @endforelse
             </div>
         </div>
     </div>

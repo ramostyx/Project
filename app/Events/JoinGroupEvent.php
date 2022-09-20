@@ -19,10 +19,10 @@ class JoinGroupEvent
      *
      * @return void
      */
-    public function __construct($user,$teacher)
+    public function __construct($teacher,$message)
     {
-        $this->user = $user;
         $this->teacher = $teacher;
+        $this->message = $message;
     }
 
     /**

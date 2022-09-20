@@ -26,5 +26,21 @@ class Group extends Model
         return $this->hasMany(Subject::class);
     }
 
+    public function assignmentsExist()
+    {
+        $assignments = collect();
+        foreach ($this->subject as $subject) {
+            foreach ($subject->assignment as $assignment) {
+                $assignments->push($assignment);
+            }
+        }
+
+        if($assignments->isNotEmpty())
+        {
+            return true;
+        }
+        return false;
+    }
+
 
 }

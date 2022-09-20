@@ -2,6 +2,7 @@ let menuToggle = document.querySelector('.toggle');
 let navigation = document.querySelector('.navigation');
 let main = document.querySelector('.main');
 let body = document.querySelector('.body');
+
 menuToggle.onclick = function(){
     menuToggle.classList.toggle('active');
     navigation.classList.toggle('active');
