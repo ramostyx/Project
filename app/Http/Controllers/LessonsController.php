@@ -38,7 +38,7 @@ class LessonsController extends Controller
             if($group->subject->contains($subject))
             {
                 $lessons=$subject->lessons;
-                return view('Student.Groups.Subjects.lessons.index',compact('group','subject','lessons'));
+                return view('Student.Groups.Subjects.Lessons.index',compact('group','subject','lessons'));
             }
             return back()->with('error','This subject does not belong to this group');
         }
@@ -78,7 +78,7 @@ class LessonsController extends Controller
         ]);
         foreach ($request->file('attachment') as $file) {
             $filename = $file->getClientOriginalName();
-            $path = 'storage/lessons/attachments/' . $filename;
+            $path = 'lessons/attachments/' . $filename;
             $attachment = Attachment::create([
                 'filename' => $filename,
                 'type' => $file->getClientOriginalExtension(),
@@ -87,7 +87,7 @@ class LessonsController extends Controller
                 'attachable_type' => 'App\Models\Lesson'
             ]);
 
-            $file->storeAs('lessons/attachments', $filename);
+            $file->storeAs('lessons/attachments', $filename,'google');
 
         }
         return redirect()->route('groups.subjects.lessons.index', [$group->id, $subject->id])->with('success', 'Lesson posted Succesfuly');
@@ -188,7 +188,7 @@ class LessonsController extends Controller
         if ($request->file('attachment')) {
             foreach ($request->file('attachment') as $file) {
                 $filename = $file->getClientOriginalName();
-                $path = 'storage/assignments/attachments/' . $filename;
+                $path = 'lessons/attachments/' . $filename;
                 Attachment::create([
                     'filename' => $filename,
                     'type' => $file->getClientOriginalExtension(),
@@ -197,7 +197,7 @@ class LessonsController extends Controller
                     'attachable_type' => 'App\Models\Lesson'
                 ]);
 
-                $file->storeAs('lessons/attachments', $filename);
+                $file->storeAs('lessons/attachments', $filename,'google');
 
             }
         }

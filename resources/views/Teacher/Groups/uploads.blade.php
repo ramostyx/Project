@@ -106,7 +106,7 @@
                 @endif
             @else
                 <x-bladewind.empty-state
-                message="You are teaching an empty classroom share the group's code with your students to fill up the group."
+                    message="You are teaching an empty classroom share the group's code with your students to fill up the group."
                 image="{{asset('bladewind/images/Classroom-pana.svg')}}">
                 </x-bladewind.empty-state>
             @endif

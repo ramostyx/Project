@@ -8,8 +8,11 @@
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <div class="content">
+                <div class="relative px-6 pt-6 pb-3 bg-white border-b border-gray-200">
+                    <h2 class="font-semibold text-lg text-gray-700/80 absolute left-1 top-1 p-2">
+                        Assignment Creation Form
+                    </h2>
+                    <div class="content mt-6">
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="card">
@@ -17,7 +20,6 @@
                                         <div class="flex flex-col">
                                             <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
                                                 <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
-                                                    Assignment Creation Form
                                                     <div class="overflow-hidden">
                                                         <x-validation-errors />
                                                         <form action="{{route('groups.subjects.assignments.store',[$group->id,$subject->id])}}" method="POST" enctype="multipart/form-data">

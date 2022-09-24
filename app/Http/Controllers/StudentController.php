@@ -289,10 +289,10 @@ class StudentController extends Controller
         $file=$request->file('work');
 
         $filename=$file->getClientOriginalName();
-        $path='storage/students/assignments/'.$assignment->id.'/'.$filename;
+        $path='students/assignments/'.$assignment->id.'/'.$filename;
 
 
-        $file->storeAs('students/assignments/'.$assignment->id,$filename);
+        $file->storeAs('students/assignments/'.$assignment->id,$filename,'google');
 
         AssignmentStudent::where('student_id',Auth::user()->student->id)
             ->where('assignment_id',$assignment->id)->update([

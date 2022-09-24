@@ -97,7 +97,7 @@ class AssignmentsController extends Controller
         foreach($request->file('attachment') as $file)
         {
             $filename=$file->getClientOriginalName();
-            $path='storage/assignments/attachments/'.$filename;
+            $path='assignments/attachments/'.$filename;
             $attachment=Attachment::create([
                 'filename'=> $filename,
                 'type'=>$file->getClientOriginalExtension(),
@@ -106,7 +106,7 @@ class AssignmentsController extends Controller
                 'attachable_type' => 'App\Models\Assignment'
             ]);
 
-            $file->storeAs('assignments/attachments',$filename);
+            $file->storeAs('assignments/attachments',$filename,'google');
 
         }
         return redirect()->route('groups.subjects.assignments.index',[$group->id,$subject->id])->with('success','Assignment created Succesfuly');
@@ -190,7 +190,7 @@ class AssignmentsController extends Controller
             foreach($request->file('attachment') as $file)
             {
                 $filename=$file->getClientOriginalName();
-                $path='storage/assignments/attachments/'.$filename;
+                $path='assignments/attachments/'.$filename;
                 Attachment::create([
                     'filename'=> $filename,
                     'type'=>$file->getClientOriginalExtension(),
@@ -199,7 +199,7 @@ class AssignmentsController extends Controller
                     'attachable_type' => 'App\Models\Assignment'
                 ]);
 
-                $file->storeAs('assignments/attachments',$filename);
+                $file->storeAs('assignments/attachments',$filename,'google');
 
             }
         }
@@ -257,13 +257,13 @@ class AssignmentsController extends Controller
 
     public function download(Attachment $attachment)
     {
-        return response()->download($attachment->path);
+        return Storage::disk('google')->download($attachment->path);
     }
 
     public function workDownload(Request $request)
     {
         if($request->path != '_')
-            return response()->download($request->path);
+            return Storage::disk('google')->download($request->path);
         return back()->with('error','No work has been turned in to download');
     }
 

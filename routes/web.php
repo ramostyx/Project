@@ -9,6 +9,7 @@ use App\Http\Controllers\SubjectController;
 use App\Models\Group;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,15 +22,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/test', function() {
+    $grades=collect();
+    $group=Group::find(1)->first();
+    foreach ($group->subject as $subject) {
+        foreach ($subject->grade as $grade) {
+            $grades->push($grade);
+        }
+    }
+    dd($grades);
+});
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::get('/test', function () {
-    $students=Group::find(1)->students('pending')->get();
-    return view('Teacher.Groups.requests',compact('students'));
-});
 
 Route::middleware(['auth','role:teacher'])->prefix('teacher')->name('teacher.')->group(function(){
 });

@@ -2,16 +2,12 @@
     // where do you want the notification displayed
     // available options are top right, top left, bottom right, bottom left
     // top center, bottom center
-    'type' => 'success',
-    'icon' => [
-        'success'=>'M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z',
-        'error' => 'M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 ',
-    ],
-    'colors' => [
-        'success'=>'-green-',
-        'error'=>'-red-',
-    ],
+    'type',
     'position' => 'top right',
+    'colors' => [
+        'success' => 'green',
+        'error' => 'red',
+    ],
     'position_css' => [
         'top_right' => 'right-4 top-10',
         'right_top' => 'right-4 top-10',
@@ -28,20 +24,12 @@
     ]
 ])
 <div class="fixed {{ $position_css[str_replace(' ', '_', $position)] }} z-50 hidden border-2 bw-notification bg-white shadow-lg p-4 rounded-lg w-11/12 sm:w-1/4">
-    <div class="flex justify-start items-start gap-2">
-        <div class="alert-icon flex items-center border-2 border{{$colors[$type]}}500 justify-center h-10 w-10 flex-shrink-0 rounded-full">
-				<span class="text{{$colors[$type]}}500">
-					<svg fill="currentColor"
-                         viewBox="0 0 20 20"
-                         class="h-6 w-6">
-						<path fill-rule="evenodd"
-                              d="{{$icon[$type]}}"
-                              clip-rule="evenodd"></path>
-					</svg>
-				</span>
+    <div class="flex">
+        <div class="flex-none pr-4">
+            <x-bladewind::modal-icon />
         </div>
         <div class="flex-grow pb-1 pr-4 relative">
-            <h1 class="font-semibold text{{$colors[$type]}}500 title"></h1>
+            <h1 class="font-semibold text-{{$colors[$type]}}-600 title"></h1>
             <div class="pt-1 text-sm !text-gray-600 message"></div>
             <svg xmlns="http://www.w3.org/2000/svg"
                 class="h-5 w-5 absolute -right-1 cursor-pointer -top-1 text-gray-400 hover:bg-gray-200 p-1"
